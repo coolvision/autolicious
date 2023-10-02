@@ -63,21 +63,21 @@ print output in following JSON format:
 
     // hidePage();
 
-    const completion = await openai.chat.completions.create({
-        messages: [{ role: 'user', content: prompt }],
-        model: settings.model,
-    });
+    // const completion = await openai.chat.completions.create({
+    //     messages: [{ role: 'user', content: prompt }],
+    //     model: settings.model,
+    // });
 
-    let content = completion.choices[0].message.content;
+    // let content = completion.choices[0].message.content;
 
-    console.log("chat response:", a);
+    // console.log("chat response:", a);
 
-    saveObjectInLocalStorage({
-        [window.location.href]: {
-                href: window.location.href,
-                content: content
-            }
-        });
+    // saveObjectInLocalStorage({
+    //     [window.location.href]: {
+    //             href: window.location.href,
+    //             content: content
+    //         }
+    //     });
 }
 
 let cached = await getObjectFromLocalStorage(window.location.href);
@@ -92,5 +92,3 @@ if (!cached) {
         window.addEventListener('load', sendPageContent);
     }
 }
-
-export {}
