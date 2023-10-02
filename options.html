@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+  
+    <div class="card" style="padding:1em;">
+
+        <form>
+            <label for="password">openAI API Key:</label>
+            <input type="password" id="api-key" required />
+            <br><br>
+            <label for="gpt">model:</label>
+            <select name="model" id="model">
+                <option value="gpt-4">gpt-4</option>
+                <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+            </select>
+
+        </form>
+
+        <div style="float:left; margin-left:8px;">
+            <label for="blacklist">blacklist:</label>
+            <br>
+            <textarea rows="4" name="blacklist" id="blacklist">twitter.com</textarea>
+        </div>
+
+        <br>
+        <button type="submit" id="save">Save settings</button>
+
+        <br>
+        <br>
+        <hr>
+        <br>
+        <button id="clear">Clear all bookmarks</button>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

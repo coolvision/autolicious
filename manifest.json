@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "autolicious",
+    "version": "0.1",
+    "action": 
+    { 
+        "default_icon": "icon2.png",
+        "default_popup": "index.html"
+    },
+    "options_page": "options.html",
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting"
+    ]
+}
