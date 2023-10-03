@@ -1,4 +1,20 @@
-const form = document.querySelector("form");
+
+
+let tab = await getCurrentTab();
+console.log("open popup", tab);
+
+let cached = await getObjectFromLocalStorage(tab.url);
+console.log("check cached", cached);
+if (cached) {
+    let obj = JSON.parse(cached.content);
+    console.log(obj);
+    document.getElementById("result").classList.add("pa2");
+    document.getElementById("result").innerHTML = `
+    <div>${obj.categories.join(' ⟶ ')}</div>
+    <div class="mt2"><b>tags: </b>${obj.tags.join(" • ")}</div>
+    `
+    document.getElementById("add").style.display = "none";
+}
 
 function save_settings() {
     let settings = {
@@ -20,13 +36,22 @@ async function getCurrentTab() {
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         console.log(request, sender);
-        sendResponse({ message: "ok" });
+        document.getElementById("loading_spinner").style.display = "none";
+
+        let obj = JSON.parse(request.chat_response);
+        console.log(obj);
+
+        document.getElementById("result").classList.add("pa2");
+        document.getElementById("result").innerHTML = `
+        <div>${obj.categories.join(' ⟶ ')}</div>
+        <div class="mt2"><b>tags: </b>${obj.tags.join(" • ")}</div>
+        `
+        document.getElementById("add").style.display = "none";
     }
 );
 
 import scriptFileName from './content?script'
 document.getElementById("add").addEventListener('pointerdown', add_bookmark);
-
 
 async function add_bookmark() {
 
@@ -34,32 +59,15 @@ async function add_bookmark() {
 
     let tab = await getCurrentTab();
 
-    console.log("tab", tab);
+    document.getElementById("loading_spinner").style.display = "block";
 
     await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: [scriptFileName]
     });
 
-    chrome.tabs.sendMessage(tab.id, { command: "sendPageContent" },
-    function (response) {
-        console.log(response);
-    });
-
-    // chrome.runtime.sendMessage({
-    //     command: "sendPageContent"
-    // }, (response) => console.log("response", response));
-
-    // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    //     chrome.tabs.sendMessage(tabs[0].id, { command: "sendPageContent" },
-    //     function (response) {
-    //         console.log(response);
-    //     });
-    // });
-
+    chrome.tabs.sendMessage(tab.id, { command: "sendPageContent" });
 }
-
-
 
 document.getElementById("save").addEventListener('pointerdown', () => {
     save_settings();
@@ -74,6 +82,17 @@ document.getElementById("clear").addEventListener('pointerdown', () => {
 chrome.storage.local.get("settings", (data) => {
     document.querySelector("#api-key").value = data.settings.apiKey || "";
     document.querySelector("#model").value = data.settings.model || "";
-    // document.querySelector("#blacklist").value = data.settings.blacklist || "";
     console.log("settings read", data.settings);
 });
+
+async function getObjectFromLocalStorage(key) {
+    return new Promise((resolve, reject) => {
+        try {
+            chrome.storage.local.get(key, function (value) {
+                resolve(value[key]);
+            });
+        } catch (ex) {
+            reject(ex);
+        }
+    });
+};

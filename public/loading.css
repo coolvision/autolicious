@@ -1,0 +1,23 @@
+  .blob-4 {
+    height: 50px;
+    aspect-ratio: 2;
+    border: 10px solid #000;
+    background: 
+      radial-gradient(farthest-side,#fff 98%,#0000 ) left/20px 20px,
+      radial-gradient(farthest-side,#fff 98%,#0000 ) left/20px 20px,
+      radial-gradient(farthest-side,#fff 98%,#0000 ) center/20px 20px,
+      radial-gradient(farthest-side,#fff 98%,#0000 ) right/20px 20px,
+      #000;
+    background-repeat:no-repeat;
+    filter: blur(4px) contrast(10);
+    animation: b4 1s infinite;
+  }
+  @keyframes b4 {
+    100%  {background-position:right,left,center,right}
+  }
+
+  .add-bookmark {
+    height: 50px;
+    /* aspect-ratio: 2; */
+    border: 10px solid #000;
+  }

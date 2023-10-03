@@ -5,24 +5,32 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="tachyons.min.css">
+    <link rel="stylesheet" type="text/css" href="loading.css">
     <title>autolicious</title>
   </head>
-  <body class="sans-serif">
+  <body class="sans-serif bg-black white">
 
-        <div id="add" class="button f3 bw2 ma2 ba ph2 pv1 dib pointer hover-blue">add bookmark</div>
+        <div id="add" class="button f3 mh4 mt4 ph2 pv1 ba dib pointer hover-blue">
+            <div class="">add bookmark</div>
+            <div id="loading_spinner" class="blob-4 dn"></div>
+        </div>
 
-        <form class="mh2 f5">
-            <label for="password">openAI API Key:</label>
-            <input class = "mb2" type="password" id="api-key" required />
+        <div id="result" class="mh4 mt4 mb4 ba f5">
+        </div>
+        
+        <form class="mh4 f5">
+            <label for="password">OpenAI API Key:</label>
+            <input class = "mb2 bg-black white" type="password" id="api-key" required />
             <label for="gpt">model:</label>
-            <select name="model" id="model">
+            <select class="bg-black white" name="model" id="model">
                 <option value="gpt-4">gpt-4</option>
                 <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-            </select>          
+            </select>     
         </form>
+        <div id="save" class="f5 mh4 mt2 ba ph2 pv1 dib pointer hover-blue">save settings</div>
 
-        <div id="save" class="button f5 ma2 ba ph2 pv1 dib pointer hover-blue">save settings</div>
-        <div id="clear" class="button f5 mh2 mb2 ba ph2 pv1 dib pointer hover-blue">clear all bookmarks</div>
+        <div id="view" class="f5 ma4 ba ph2 pv1 dib pointer hover-blue">view all bookmarks</div>
+        <div id="clear" class="f5 ma4 mt2 ba ph2 pv1 dib pointer hover-blue">clear all bookmarks</div>
 
     <script type="module" src="/main.js"></script>
 </html>
