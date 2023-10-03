@@ -28,20 +28,14 @@ let settings = await getObjectFromLocalStorage("settings");
 let api_key = settings.apiKey;
 let openai = new OpenAI({ apiKey: api_key, dangerouslyAllowBrowser: true });
 
+let processing = false;
+
 async function sendPageContent() {
 
-    let settings = await getObjectFromLocalStorage("settings");
+    processing = true;
 
-    let blacklist = settings.blacklist.split('\n');
-    console.log("blacklist", settings.blacklist, blacklist);
-    for (let b of blacklist) {
-        console.log("check b", b, window.location.href, window.location.href.includes(b));
-        if (window.location.href.includes(b)) {
-            console.log("page is blacklisted", window.location.href, b);
-            blockPage("page is blacklisted", window.location.href);
-            return;
-        }
-    }
+    let cached = await getObjectFromLocalStorage(window.location.href);
+    console.log("check cached", cached);
 
     const textContent = document.body.innerText;
     let text = window.location.href + '\n' + textContent.substring(0, 2000);
@@ -56,21 +50,25 @@ Please keep tags and categories as short and concise as possible.
 print output in following JSON format:
 {tags: [...], rating: ..., categories: [category, sub-category, sub-sub-category, sub-sub-sub-category]}
 ===
-{text}`;
+` + text;
 
     console.log('prompt:', prompt);
     console.log("use model", settings.model);
 
     // hidePage();
 
-    // const completion = await openai.chat.completions.create({
-    //     messages: [{ role: 'user', content: prompt }],
-    //     model: settings.model,
-    // });
+    const completion = await openai.chat.completions.create({
+        messages: [{ role: 'user', content: prompt }],
+        model: settings.model,
+    });
 
-    // let content = completion.choices[0].message.content;
+    let content = completion.choices[0].message.content;
 
-    // console.log("chat response:", a);
+    chrome.runtime.sendMessage({
+        chat_response: content
+    }, (response) => console.log("response", response));
+
+    console.log("chat response:", content);
 
     // saveObjectInLocalStorage({
     //     [window.location.href]: {
@@ -78,17 +76,36 @@ print output in following JSON format:
     //             content: content
     //         }
     //     });
+
+    processing = false;;
 }
 
-let cached = await getObjectFromLocalStorage(window.location.href);
-console.log("check cached", cached);
+chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+        console.log(request, sender);
 
-if (!cached) {
-    if (document.readyState === 'complete') {
-        console.log('Page is already loaded, sending message immediately')
-        sendPageContent();
-    } else {
-        console.log('Page is not loaded, waiting for load event')
-        window.addEventListener('load', sendPageContent);
+        if (!processing) {
+            console.log("do sendPageContent");
+            sendPageContent();
+        } else {
+            console.log("processing, ignore");
+        }
+
+        sendResponse({ message: "ok" });
     }
-}
+);
+
+sendPageContent();
+
+// let cached = await getObjectFromLocalStorage(window.location.href);
+// console.log("check cached", cached);
+
+// if (!cached) {
+//     if (document.readyState === 'complete') {
+//         console.log('Page is already loaded, sending message immediately')
+//         sendPageContent();
+//     } else {
+//         console.log('Page is not loaded, waiting for load event')
+//         window.addEventListener('load', sendPageContent);
+//     }
+// }

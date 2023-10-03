@@ -17,23 +17,48 @@ async function getCurrentTab() {
     return tab;
 }
 
+chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+        console.log(request, sender);
+        sendResponse({ message: "ok" });
+    }
+);
+
+import scriptFileName from './content?script'
+document.getElementById("add").addEventListener('pointerdown', add_bookmark);
+
 
 async function add_bookmark() {
 
     console.log("add pointerdown", scriptFileName);
-    
+
     let tab = await getCurrentTab();
 
     console.log("tab", tab);
 
-    chrome.scripting.executeScript({
+    await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: [scriptFileName]
     });
+
+    chrome.tabs.sendMessage(tab.id, { command: "sendPageContent" },
+    function (response) {
+        console.log(response);
+    });
+
+    // chrome.runtime.sendMessage({
+    //     command: "sendPageContent"
+    // }, (response) => console.log("response", response));
+
+    // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    //     chrome.tabs.sendMessage(tabs[0].id, { command: "sendPageContent" },
+    //     function (response) {
+    //         console.log(response);
+    //     });
+    // });
+
 }
 
-import scriptFileName from './content?script'
-document.getElementById("add").addEventListener('pointerdown', add_bookmark);
 
 
 document.getElementById("save").addEventListener('pointerdown', () => {

@@ -15,8 +15,10 @@
         "storage",
         "activeTab",
         "scripting",
-        "tabs",
-        "http://*/*",
-        "https://*/*"
+        "tabs"
+    ],
+    "host_permissions":[
+        "https://*/*", 
+        "http://*/*" 
     ]
 }
