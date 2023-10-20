@@ -25,14 +25,18 @@ const saveObjectInLocalStorage = async function (obj) {
 };
 
 let settings = await getObjectFromLocalStorage("settings");
-let api_key = settings.apiKey;
-let openai = new OpenAI({ apiKey: api_key, dangerouslyAllowBrowser: true });
+let openai = null;e
+if (settings && "apiKey" in settings) {
+    let aepi_key = settings["apiKey"];
+    console.log("settings", settings, settings["apiKey"]);
+    openai = new OpenAI({ apiKey: api_key, dangerouslyAllowBrowser: true });
+}
 
 let processing = false;
 
 async function sendPageContent() {
 
-    processing = true;
+    proceessing = true;
 
     let cached = await getObjectFromLocalStorage(window.location.href);
     console.log("check cached", cached);
@@ -47,22 +51,8 @@ async function sendPageContent() {
     let s = await getObjectFromLocalStorage("bookmarks_data");
     console.log("start", s);
 
-
     const textContent = document.body.innerText;
     let text = window.location.href + '\n' + document.title + '\n' + textContent.substring(0, 2000);
-
-//     let prompt =
-//         `You are an expert in cataloguing, ranking, archiving and retrieving web pages.
-// For a given text from a web page, please write:
-// - list of descriptive tags (up to 5)
-// - select category for the content (like science, technology, entertainment, education, editorial, shopping, etc...)
-// - select sub-category (like AI, movie, programming, blog post, etc...)
-// - select sub-sub-category, which describes specific topic of the content
-// Please keep tags and categories as short and concise as possible.
-// print output in following JSON format:
-// {"tags": [...], "categories": [category, sub-category, sub-sub-category]}
-// ===
-// ` + text;
 
     let prompt =
         `You are an expert in cataloguing, ranking, archiving and retrieving web pages.
@@ -83,7 +73,15 @@ following text contains page url, title, and part of the content:
 
     console.log('prompt:', prompt);
     let settings = await getObjectFromLocalStorage("settings");
-    console.log("use model", settings.model);
+
+    if (!settings || !("model" in settings) || !("apiKey" in settings)) {
+        chrome.runtime.sendMessage({
+            chat_response: JSON.stringify({info: "Please provide OpenAI API key in the settings form below"})
+        });
+        return;
+    }
+
+    console.log("use model", settings.model, settings.apiKey);
 
     const completion = await openai.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],

@@ -2,6 +2,7 @@
     "manifest_version": 3,
     "name": "autolicious",
     "version": "0.1",
+    "description": "Automatic cataloging of bookmarks using ChatGPT & OpenAI API",
     "action": {
         "default_icon": "icon2.png",
         "default_popup": "index.html"
@@ -22,7 +23,10 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "view.html"
+                "view.html",
+                "view.js",
+                "loading.css",
+                "tachyons.min.css"
             ],
             "matches": [
                 "<all_urls>"

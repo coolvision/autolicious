@@ -41,12 +41,20 @@ chrome.runtime.onMessage.addListener(
         let obj = JSON.parse(request.chat_response);
         console.log(obj);
 
-        document.getElementById("result").classList.add("pa2");
-        document.getElementById("result").innerHTML = `
-        <div>${obj.categories.join(' ⟶ ')}</div>
-        <div class="mt2"><b>tags: </b>${obj.tags.join(" • ")}</div>
-        `
-        document.getElementById("add").style.display = "none";
+        if (obj.info) {
+            document.getElementById("result").classList.add("pa2");
+            document.getElementById("result").innerHTML = `
+            <div>${obj.info}</div>
+            `
+        } else {
+            document.getElementById("result").classList.add("pa2");
+            document.getElementById("result").innerHTML = `
+            <div>${obj.categories.join(' ⟶ ')}</div>
+            <div class="mt2"><b>tags: </b>${obj.tags.join(" • ")}</div>
+            `
+            document.getElementById("add").style.display = "none";
+        }
+
     }
 );
 
