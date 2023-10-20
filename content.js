@@ -44,18 +44,40 @@ async function sendPageContent() {
         return;
     }
 
+    let s = await getObjectFromLocalStorage("bookmarks_data");
+    console.log("start", s);
+
+
     const textContent = document.body.innerText;
-    let text = window.location.href + '\n' + textContent.substring(0, 2000);
+    let text = window.location.href + '\n' + document.title + '\n' + textContent.substring(0, 2000);
+
+//     let prompt =
+//         `You are an expert in cataloguing, ranking, archiving and retrieving web pages.
+// For a given text from a web page, please write:
+// - list of descriptive tags (up to 5)
+// - select category for the content (like science, technology, entertainment, education, editorial, shopping, etc...)
+// - select sub-category (like AI, movie, programming, blog post, etc...)
+// - select sub-sub-category, which describes specific topic of the content
+// Please keep tags and categories as short and concise as possible.
+// print output in following JSON format:
+// {"tags": [...], "categories": [category, sub-category, sub-sub-category]}
+// ===
+// ` + text;
 
     let prompt =
         `You are an expert in cataloguing, ranking, archiving and retrieving web pages.
 For a given text from a web page, please write:
-- list of descriptive keywords for future retrieval
-- rank this text on a scale 1-10 for being relevant and interesting for future retrieval
-- select category (most general), sub-category (more specific), sub-sub-category (specialized), for the content
-Please keep tags and categories as short and concise as possible.
+- title for saving the page, based on url, title and content
+- short 1-sentence description of the page
+- list of descriptive tags (up to 5)
+- select category for the content (like science, technology, entertainment, education, editorial, shopping, etc...)
+- select sub-category (like ai, movie, programming, blog post, etc...)
+- select sub-sub-category, which describes specific topic of the content
+categories should be lower case, and as short as possible, 1 word maximum.
+shorten category names is possible: "ai" instead of "artificial intelligence", etc...
 print output in following JSON format:
-{"tags": [...], "rating": ..., "categories": [category, sub-category, sub-sub-category]}
+{"tags": [...], "title": ..., "description": ..., "categories": [category, sub-category, sub-sub-category]}
+following text contains page url, title, and part of the content:
 ===
 ` + text;
 
@@ -69,18 +91,68 @@ print output in following JSON format:
     });
 
     let content = completion.choices[0].message.content;
+    console.log("chat response:", content);
+
+    let obj = {};
+    try {
+        obj = JSON.parse(content);
+    } catch (e) {
+        chrome.runtime.sendMessage({
+            chat_response: e
+        });
+        return console.error(e);
+    }
+    console.log("parsed:", obj);
 
     chrome.runtime.sendMessage({
         chat_response: content
     });
 
-    console.log("chat response:", content);
-    console.log("chat response JSON:", JSON.parse(content));
+    let data = await getObjectFromLocalStorage("bookmarks_data");
+    console.log("get data:", data);
 
-    saveObjectInLocalStorage({
+    if (!data) {
+        data = {tags: [], categories: {}};
+    } else {
+        data = JSON.parse(data);
+    }
+
+    // for (let t of obj.tags) {
+    //     data.tags.push(t);
+    // }
+    // data.tags = [...new Set(data.tags)];
+    let c = obj.categories;
+
+    if (data.categories[c[0]]) {
+        if (data.categories[c[0]][c[1]]) {
+            data.categories[c[0]][c[1]].push(c[2]);
+            data.categories[c[0]][c[1]] = [...new Set(data.categories[c[0]][c[1]])];
+        } else {
+            data.categories[c[0]][c[1]] = [c[2]];
+        }
+    } else {
+        data.categories[c[0]] = {};
+        data.categories[c[0]][c[1]] = [c[2]];
+    }
+
+    console.log("processed data", data, JSON.stringify(data));
+
+    // let bookmarks_data = "bookmarks_data123"; //{tags: tags, categories: categories};
+    await saveObjectInLocalStorage({bookmarks_data: JSON.stringify(data)});
+
+    // console.log("data", data, tags, categories, bookmarks_data);
+
+    let b = await getObjectFromLocalStorage("bookmarks_data");
+    console.log("b", b);
+
+    await saveObjectInLocalStorage({
         [window.location.href]: {
                 href: window.location.href,
-                content: content
+                document_title: document.title,
+                title: obj.title,
+                description: obj.description,
+                content: content,
+                categories: c[0] + " : " + c[1] + " : " + c[2]
             }
         });
 

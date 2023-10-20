@@ -1,13 +1,13 @@
   .blob-4 {
     height: 50px;
     aspect-ratio: 2;
-    border: 10px solid #000;
+    border: 10px solid #fff;
     background: 
-      radial-gradient(farthest-side,#fff 98%,#0000 ) left/20px 20px,
-      radial-gradient(farthest-side,#fff 98%,#0000 ) left/20px 20px,
-      radial-gradient(farthest-side,#fff 98%,#0000 ) center/20px 20px,
-      radial-gradient(farthest-side,#fff 98%,#0000 ) right/20px 20px,
-      #000;
+      radial-gradient(farthest-side,#000 98%,#ffff ) left/20px 20px,
+      radial-gradient(farthest-side,#000 98%,#ffff ) left/20px 20px,
+      radial-gradient(farthest-side,#000 98%,#ffff ) center/20px 20px,
+      radial-gradient(farthest-side,#000 98%,#ffff ) right/20px 20px,
+      #fff;
     background-repeat:no-repeat;
     filter: blur(4px) contrast(10);
     animation: b4 1s infinite;

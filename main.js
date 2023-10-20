@@ -70,6 +70,7 @@ async function add_bookmark() {
 }
 
 document.getElementById("save").addEventListener('pointerdown', () => {
+    console.log("save");
     save_settings();
 });
 
@@ -78,6 +79,14 @@ document.getElementById("clear").addEventListener('pointerdown', () => {
     chrome.storage.local.clear();
     save_settings();
 });
+
+document.getElementById("view").addEventListener('pointerdown', () => {
+    chrome.tabs.create({
+        active: true,
+        url: 'view.html'
+    }, null);
+});
+
 
 chrome.storage.local.get("settings", (data) => {
     document.querySelector("#api-key").value = data.settings.apiKey || "";
