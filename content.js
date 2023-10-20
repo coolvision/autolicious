@@ -25,7 +25,7 @@ const saveObjectInLocalStorage = async function (obj) {
 };
 
 let settings = await getObjectFromLocalStorage("settings");
-let openai = null;e
+let openai = null;
 if (settings && "apiKey" in settings) {
     let aepi_key = settings["apiKey"];
     console.log("settings", settings, settings["apiKey"]);
