@@ -27,7 +27,7 @@ const saveObjectInLocalStorage = async function (obj) {
 let settings = await getObjectFromLocalStorage("settings");
 let openai = null;
 if (settings && "apiKey" in settings) {
-    let aepi_key = settings["apiKey"];
+    let api_key = settings["apiKey"];
     console.log("settings", settings, settings["apiKey"]);
     openai = new OpenAI({ apiKey: api_key, dangerouslyAllowBrowser: true });
 }
@@ -36,7 +36,7 @@ let processing = false;
 
 async function sendPageContent() {
 
-    proceessing = true;
+    processing = true;
 
     let cached = await getObjectFromLocalStorage(window.location.href);
     console.log("check cached", cached);
